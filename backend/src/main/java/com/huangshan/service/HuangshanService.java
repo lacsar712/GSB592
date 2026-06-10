@@ -30,12 +30,29 @@ public abstract class HuangshanService {
      */
     protected Integer getIntValue(Object value) {
         if (value == null) return null;
-        if (value instanceof Integer) return (Integer) value;
+        if (value instanceof Number) {
+            int intValue = ((Number) value).intValue();
+            if (value instanceof Double || value instanceof Float) {
+                if (Math.abs(((Number) value).doubleValue() - intValue) > 1e-9) {
+                    return null;
+                }
+            }
+            return intValue;
+        }
         if (value instanceof String) {
             try {
                 return Integer.parseInt((String) value);
             } catch (NumberFormatException e) {
-                return null;
+                try {
+                    double d = Double.parseDouble((String) value);
+                    int intValue = (int) d;
+                    if (Math.abs(d - intValue) > 1e-9) {
+                        return null;
+                    }
+                    return intValue;
+                } catch (NumberFormatException e2) {
+                    return null;
+                }
             }
         }
         return null;
