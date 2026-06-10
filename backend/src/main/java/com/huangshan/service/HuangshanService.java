@@ -24,13 +24,23 @@ public abstract class HuangshanService {
 
     /**
      * 将Object类型的值转换为Integer
-     * 支持Integer和String类型的转换
+     * 支持Number子类(Integer, Long, Double, Float, Short, Byte, BigDecimal)和String类型的转换
      * @param value 待转换的值
      * @return 转换后的Integer，如果无法转换则返回null
      */
     protected Integer getIntValue(Object value) {
         if (value == null) return null;
         if (value instanceof Integer) return (Integer) value;
+        if (value instanceof Number) {
+            double doubleValue = ((Number) value).doubleValue();
+            if (doubleValue % 1 != 0) {
+                return null;
+            }
+            if (doubleValue > Integer.MAX_VALUE || doubleValue < Integer.MIN_VALUE) {
+                return null;
+            }
+            return (int) doubleValue;
+        }
         if (value instanceof String) {
             try {
                 return Integer.parseInt((String) value);
